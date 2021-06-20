@@ -1,0 +1,72 @@
+version: '3.6'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    container_name: '${APP_NAME}_nginx'
+    ports:
+      - '${NGINX_PORT}:8081'
+    depends_on:
+      - php
+      - mariadb
+    environment:
+      HOST_NAME: '${APP_NAME}_php'
+    networks:
+      - project
+  mariadb:
+    image: 'mariadb:latest'
+    container_name: '${APP_NAME}_mariadb'
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '${BD_PORT}:3306'
+    environment:
+      MYSQL_DATABASE: '${APP_NAME}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_USERNAME}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mariadb
+    volumes:
+      - './docker/mysql:/etc/mysql/conf.d'
+    networks:
+      - project
+  php:
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    container_name: '${APP_NAME}_php'
+    volumes:
+      - './api:/var/www/api:delegated'
+      - './api/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini'
+    ports:
+      - '${PHP_PORT}:9000'
+    env_file:
+      - .env
+    environment:
+      APP_NAME: '${APP_NAME}'
+      APP_URL: '${APP_URL}'
+      APP_DEBUG: '${APP_DEBUG}'
+      APP_FRONTEND_URL: '${APP_FRONTEND_URL}'
+      DB_USERNAME: '${DB_USERNAME}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+    networks:
+      - project
+  vue:
+    build:
+      context: ./spa/
+      dockerfile: Dockerfile
+    container_name: '${APP_NAME}_vue'
+    volumes:
+      - './spa:/usr/src/app:delegated'
+    environment:
+      APP_NAME: '${APP_NAME}'
+      APP_BACKEND_URL: '${APP_BACKEND_URL}'
+    ports:
+      - '${VUE_PORT}:8080'
+    command: sh -c "npm install && npm run serve"
+networks:
+  project:
+    name: '${APP_NAME}'
+  
