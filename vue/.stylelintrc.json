@@ -1,27 +1,26 @@
 {
-    "extends": [
-      "stylelint-config-sass-guidelines",
-      "stylelint-config-standard"
+  "extends": [
+    "stylelint-config-sass-guidelines",
+    "stylelint-config-standard"
+  ],
+  "rules": {
+    "max-nesting-depth": 5,
+    "no-descending-specificity": null,
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        "ignorePseudoElements": [
+          "v-deep"
+        ]
+      }
     ],
-    "rules": {
-      "max-nesting-depth": 5,
-      "no-descending-specificity": null,
-      "selector-pseudo-element-no-unknown": [
-        true,
-        {
-          "ignorePseudoElements": [
-            "v-deep"
-          ]
-        }
-      ],
-      "selector-pseudo-class-no-unknown": [
-        true,
-        {
-          "ignorePseudoClasses": [
-            "/^v-/"
-          ]
-        }
-      ]
-    }
+    "selector-pseudo-class-no-unknown": [
+      true,
+      {
+        "ignorePseudoClasses": [
+          "/^v-/"
+        ]
+      }
+    ]
   }
-  
+}
